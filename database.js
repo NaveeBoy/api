@@ -51,10 +51,31 @@ let db = new sqlite3.Database(DBSOURCE, (err) => {
             }
         })
 
+        db.run(`CREATE TABLE customer (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name text,
+            address text,
+            email text,
+            dateOfBirth text,
+            gender text,
+            age integer,
+            cardHolderName text,
+            cardNumber text,
+            expiryDate text,
+            ow integer,
+            timeStamp text
+            )`, (err) => {
+            if (err) {
+                // Table already created
+            } else {
+                // Table just created
+            }
+        })
+
+        
 
 
     }
 })
 
 module.exports = db
-
