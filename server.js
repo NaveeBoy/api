@@ -288,3 +288,32 @@ app.delete("/api/suppliers/deleteAll/:id", (req, res, next) => {
 app.get("/", (req, res, next) => {
     res.json({ "message": "University of Moratuwa" })
 });
+
+app.post('/customers', (req, res) => {
+    const { name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expiryDate, ow, timeStamp } = req.body;
+
+    // Email validation
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: 'Invalid email address' });
+    }
+
+    // Credit card number validation
+    const cardNumberRegex = /^\d{12}$/;
+    if (!cardNumberRegex.test(cardNumber)) {
+        return res.status(400).json({ message: 'Invalid credit card number' });
+    }
+
+    const queryString = 'INSERT INTO customer (name, address, email, date_of_birth, gender, age, card_holder_name, card_number, expiry_date, ow, timestamp) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING customer_id';
+
+    pool.query(queryString, [name, address, email, dateOfBirth, gender, age, cardHolderName, cardNumber, expiryDate, ow, timeStamp], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(400).json({ message: 'Error registering customer' });
+        }
+
+        const customerId = result.rows[0].customer_id;
+
+        return res.status(201).json({ message: `${name} has been registered`, customerId });
+    });
+});
